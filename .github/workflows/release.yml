@@ -21,14 +21,15 @@ jobs:
         with:
           arch: x64
 
-      - name: Build (warnings as errors)
-        run: cl /nologo /W4 /WX /EHsc /O2 vcnwipe.cpp
+      - name: Build (warnings as errors, static CRT)
+        run: cl /nologo /W4 /WX /EHsc /O2 /MT vcnwipe.cpp
 
       - name: Smoke test (usage must exit with code 2)
         shell: pwsh
         run: |
           & .\vcnwipe.exe 2>$null
-          if ($LASTEXITCODE -ne 2) { throw "expected exit code 2 (usage), got $LASTEXITCODE" }
+          "smoke-test exit code: $LASTEXITCODE"
+          if ($LASTEXITCODE -ne 2) { exit 1 }
 
       - name: Compute SHA256
         id: hash
